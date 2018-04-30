@@ -1,0 +1,59 @@
+#!/usr/bin/env node
+const path = require('path')
+const process = require('process')
+const fs = require('fs')
+// 处理参数， 获取工作目录
+let workPath = process.cwd() // 设置为全局变量
+if (process.argv.length === 3) {
+  let inputPath = process.argv[2]
+  if (path.isAbsolute(inputPath)) {
+    workPath = inputPath
+  } else {
+    workPath = path.resolve(workPath, inputPath)
+  }
+}
+global.workPath = workPath
+if (!fs.existsSync(workPath)) {
+  fs.mkdirSync(workPath)
+}
+
+// 复制dist。
+const cpr = require('cpr')
+let distPath = path.resolve(workPath, 'dist')
+cpr(path.resolve(__dirname, '../dist'), distPath, {
+  deleteFirst: true,
+  overwrite: true,
+  confirm: true
+}, function (err, files) {
+  if (err) throw err
+})
+
+// express 启动
+const express = require('express')
+const app = express()
+const bodyParser = require('body-parser')
+app.use(bodyParser.urlencoded({extended: false}))
+app.use(bodyParser.json())
+
+// 测试的跨域
+app.all('*', function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header('Access-Control-Allow-Headers', 'X-Requested-With')
+  res.header('Access-Control-Allow-Methods', 'PUT,POST,GET,DELETE,OPTIONS')
+  res.header('Access-Control-Allow-Headers', 'Content-Type')
+  res.header('Access-Control-Allow-Credentials', 'true')
+  next()
+})
+
+app.use('/admin', express.static(distPath))
+
+const route = require('./router')
+route(app)
+
+let port = 2679
+
+let server = app.listen(port, function () {
+  let host = server.address().address
+  let port = server.address().port
+  console.log('应用实例，访问地址为 http://%s:%s', host, port)
+})
