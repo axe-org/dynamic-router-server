@@ -97,27 +97,43 @@ function disableRule (ruleID) {
 
 // app查询设定的规则
 // 规则命中由两个因素限定
-// tags tag的目的是对于一个版本的 ，一个模块可以有两个实现， 以支持后续的灰度或者ab测试功能。
+// tags tag的目的是对于一个版本的 ，一个模块可以有两个实现， 以支持后续的灰度或者ab测试功能。 优先匹配更多tag的规则。
 // version 版本号， 随着版本变更，app的模块实现发生了变化。 所以在一个模块，在tags相同的情况下，版本限定是必须不同的， 而 对于两个不同版本的规则，优先使用版本限定最高的规则。
 function queryRules (versionCode, tags) {
-  return db.all(`SELECT * FROM rule WHERE version_code <= ? AND enable = 1 ORDER BY version_code DESC`).then(rows => {
+  return db.all(`SELECT * FROM rule WHERE version_code <= ? AND enable = 1 ORDER BY version_code DESC`, versionCode).then(rows => {
     let rules = {}
     rows.forEach(row => {
       let ruleTags = JSON.parse(row.tags)
       // tag命中，命中规则为 上传tags 包含所有规则tags.
       if (tags.length >= ruleTags.length) {
         for (let index in ruleTags) {
-          if (!tags.includes(tags[index])) {
+          if (!tags.includes(ruleTags[index])) {
             return
           }
         }
-        // 排序后，只设置最新的规则。
-        if (!rules[row.module]) {
-          rules[row.module] = row.redirect
+        row.tags = ruleTags
+        // 命中tag , 检测当前模块是否已获取到配置
+        let prev = rules[row.module]
+        if (!prev) {
+          rules[row.module] = row
+        } else {
+          // 检测版本号。 已经进行了版本号排序，这里只需要考虑版本相同的特殊情况
+          if (row.version === prev.version) {
+            // 只有版本相同，判断 哪个tags更多
+            if (row.tags.length > prev.tags.length) {
+              // 优先记录 tag选项更多的规则。
+              rules[row.module] = row
+            }
+          }
         }
       }
     })
-    return rules
+    let data = {}
+    for (let key in rules) {
+      let rule = rules[key]
+      data[rule.module] = rule.redirect
+    }
+    return data
   })
 }
 
