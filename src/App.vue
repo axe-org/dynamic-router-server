@@ -149,15 +149,24 @@ export default {
         if (!valid) {
           return
         }
-        this.addRuleLoading = true
         let form = {
           ...this.addRuleInfo
         }
         form.tags = JSON.stringify(form.tags)
+        if (form.tags.length >= 100) {
+          // 设置该字段最多100字节。 即规则不可能无限多。
+          return this.$message({
+            type: 'error',
+            message: 'tag 设置过多， 请减少tag数量！！！！',
+            duration: 0,
+            showClose: true
+          })
+        }
         if (form.redirect.substring(form.redirect.length - 1) !== '/') {
           // 以 / 结尾
           form.redirect = form.redirect + '/'
         }
+        this.addRuleLoading = true
         axios.post('/admin/create', form).then(res => {
           this.addRuleLoading = false
           if (res.data.error) {
