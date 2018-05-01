@@ -2,16 +2,15 @@
   <div class="container" v-loading="loading">
     <div class="option">
       <div class="left">
-        <el-input style="width: 270px;" v-model="version" placeholder="指定版本下启用的规则">
-          <template slot="prepend">查询版本</template>
+        <div class="label">查询版本</div>
+        <el-input style="width:120px;" v-model="version" placeholder="筛选版本可用"/>
+        <div class="label" style="margin-left: 10px;">指定模块</div>
+        <el-input style="width: 120px;" v-model="module" placeholder="具体模块名">
         </el-input>
-        <el-input style="width: 230px;margin-left: 10px;" v-model="module" placeholder="具体模块的规则">
-          <template slot="prepend">指定模块</template>
+        <div class="label" style="margin-left: 10px;">查询tag</div>
+        <el-input style="width: 125px;" v-model="tag" placeholder="包含tag的规则">
         </el-input>
-        <el-input style="width: 240px;margin-left: 10px;" v-model="tag" placeholder="包含该tag的规则">
-          <template slot="prepend">查询tag</template>
-        </el-input>
-        <el-radio-group v-model="enable" @change="loadData" size="small" style="width: 170px;margin-left: 10px;">
+        <el-radio-group v-model="enable" @change="loadData" style="width: 170px;margin-left: 10px;">
           <el-radio-button label="启用中"/>
           <el-radio-button label="已弃用"/>
         </el-radio-group>
@@ -355,5 +354,10 @@ export default {
   width: 90px;
   margin-left: 10px;
   vertical-align: bottom;
+}
+.label {
+  width: 60px;
+  color: #909399;
+  font-size: 14px;
 }
 </style>
