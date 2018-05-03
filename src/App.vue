@@ -166,7 +166,7 @@ export default {
           form.redirect = form.redirect + '/'
         }
         this.addRuleLoading = true
-        axios.post('/admin/create', form).then(res => {
+        axios.post('./create', form).then(res => {
           this.addRuleLoading = false
           if (res.data.error) {
             return this.$message({
@@ -210,7 +210,7 @@ export default {
     },
     submitDisable () {
       this.disableLoading = true
-      axios.post('/admin/close', {
+      axios.post('./close', {
         ruleID: this.disableSelectedRuleID
       }).then(res => {
         this.disableLoading = false
@@ -275,7 +275,7 @@ export default {
       }
       this.lastForm = form
       // 请求数据。
-      axios.post('/admin/list', form).then(res => {
+      axios.post('./list', form).then(res => {
         this.loading = false
         if (res.data.error) {
           return this.$message({
