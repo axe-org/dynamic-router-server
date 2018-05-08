@@ -2,7 +2,11 @@
 
 dynamic router server for axe 
 
-为 `Axe`中的动态路由提供简单的服务器实现。 使用 ：
+[DEMO](https://proxy-dynamic.demo.axe-org.cn/admin/)
+
+为 `Axe`中的动态路由提供简单的服务器实现，动态路由负责配置`axe`系统中 声明路由和实现路由的映射关系 ，提供一定的动态化能力 。 
+
+安装与使用 ：
 
 	npm install dynamic-router-server -g
 	
@@ -22,7 +26,7 @@ dynamic router server for axe
 
 ### tag限定
 
-设置`tag`的目的，是为了更加灵活的进行设置， 表现为 设置了`tag`的规则，只对满足`tag`请求下发这条规则。 `tag`可以用来解决 多版本APP问题，如一个系统支持多个APP （不建议这样做， 最好还是能一个系统对应一个APP。）。
+设置`tag`的目的，是为了更加灵活的进行设置: 设置了`tag`的规则，只对满足`tag`请求下发这条规则。 `tag`可以用来解决 多版本APP问题，如一个系统支持多个APP （不建议这样做， 最好还是能一个系统对应一个APP。）。
 
 `tag`最重要的功能在于 之后可以对接 灰度测试或者 AB测试系统。 如在一个版本上，我们同时有多种实现时 ， 我们可以通过`tag`来设定 APP选择具体路由规则。详细示例 ：
 
@@ -34,6 +38,6 @@ dynamic router server for axe
 
 ## 注意事项
 
-系统只有添加和停止两个操作， 没有修改操作， 也没有删除操作。 对于废弃的规则，要及时停止。
-
-对于规则，在一个版本上， 相同`tag`设定只应该有一个规则。
+* 系统只有添加和停止两个操作， 没有修改操作， 也没有删除操作。 对于废弃的规则，要及时停止。
+* 在一个版本上， 相同`tag`设定只应该有一个规则。
+* 权限控制，生产环境的管理页面的权限控制，参考[axe-demo](https://github.com/axe-org/axe-admin-docker/tree/master/demo)的做法，前置一层`nginx`来做访问限定。
